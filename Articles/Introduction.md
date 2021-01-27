@@ -1,8 +1,8 @@
-# A (Somewhat More) Practical Guide to Apache Spark - Part 1: Conceptual Introduction to Distributed Computing 
+# A (Somewhat More) Practical Guide to Apache Spark - Part 1: Conceptual Introduction to Cluster Computing 
 
  In one of my first full-time roles as a data scientist, I was tasked with deploying and managing several Apache Spark pipelines that ingested, transformed, and cleaned terabytes of data for an enterprise analytics platform. 
  
- At the time, I had worked on a several academic projects using Spark, mainly through Databricks and AWS EMR. But going into this project, my primary experience was working with the usual data science python libraries (Jupyter notebook, pandas, scikit, numpy, sci-py, Keras, etc.) in both local and cloud-based environments (a combination of local Notebooks, Kaggle Notebooks, and JuptyerHub), so I was making the jump to distributed tools in a professional setting, for first time.
+ At the time, I had previously worked on a several academic projects using Spark, mainly through Databricks and AWS EMR. But, going into this project, my primary experience was working with the usual data science python libraries (Jupyter notebook, pandas, scikit, numpy, sci-py, Keras,Kaggle Notebooks, and JuptyerHub). As such, I was making the jump to cluster tools in a professional setting, for first time.
 <br>
 <br>
 On my third day of the job, I reviewed the specifications for my new project, and I thought to myself: "....this should be an easy transition, right?"
@@ -19,9 +19,9 @@ At the surface level, there are a lot of similarites between Spark and the tradi
 - Both have similar UDF for implementations columnar transformations
 - Scikit-learn and Spark MLlib are fairly similar in conceptual implementation (import-instantiate-fit-test-assess-repeat), though the code implementation differs slightly
 
-However, a few more steps into the world of distributed computing revealed that there are <strong>many</strong> more considerations when implementing scalable, efficient jobs across a cluster. 
+However, a few more steps into the world of Spark revealed that there are <strong>many</strong> more considerations when implementing scalable, efficient Spark jobs. This was because I wasn't just changing from Python to Scala, or one coding framework to another, but because I was jumping from localized computing to the world of *cluster computing*.
 
-Many of these differences happen under the hood (we'll refer to this as *Spark Internals* going forward), and require knowledge of commodity machines, memory allocation, and distributed storage. As such, depending on where you learned DS initially (especially if you learned through a post-grad technical program, like me*), you probably didn't get full exposure to these topics.
+ As such, although I had plenty of experience with DS tools and methods, I discovered a significant knowlege gap in areas of commoditiy hardware, memory management, and networks, that kept me from fully realizing Spark's potential.
 <br>
 <br>
 
@@ -29,69 +29,70 @@ Many of these differences happen under the hood (we'll refer to this as *Spark I
 
  <br>
 
-In the following articles, I'll be addressing many of these differences, covering key concepts and practical examples that will help any data scientist make the transition from the more traditional, localized data science tools to a distributed computing framework in Apache Spark.
+In the following articles, I'll be addressing many of these knowledge gaps, covering key concepts and practical examples that will help any data scientist make the transition from the more traditional, localized data science tools to a cluster computing framework in Apache Spark.
 
 Topics covered will include:
 
-- A Conceptual Introduction to Distributed Computing (this article)
+- A Conceptual Introduction to Cluster Computing (this article)
 - Spark Internals and Core Spark Concepts (Master-Executor Framework, Partitions, Stages, and Jobs)
 - Spark UI (SQL Plans, Executor/Job Metrics) 
 - Spark Memory Management Basics 
-- Various Data Serialization Formats
+- Cluster Sizing and Considerations
+- Deploying Spark on AWS EMR 
 - MLlib Optimizations
+- Anything else I can think of that may be useful
 
 <br>
 
-Now let's get started.
-<br>
-<br>
+## A Conceptual Introduction to Cluster Computing
 
-## A Conceptual Introduction to Distributed Computing
-
-This next section goes over a <strong>conceptual</strong> explanation of distributed computing, as opposed to local/single threaded computing. This serves to establish a mental framework to carry forward, into the next few Spark-specific articles. As such, this will be an *abstract* description of distributed processes and not specific to Apache Spark.
+This next section goes over a <strong>conceptual</strong> explanation of cluster computing, as opposed to local/single threaded computing. This serves to establish a mental framework to carry forward, into the next few Spark-specific articles. As such, this will be an *abstract* description of cluster processes and not specific to Apache Spark.
 
 If you want to jump right into Spark, please continue to the [next article](link_to_Part_I_article)
 <br>
 <br>
 
-### From Localized to Distributed Computing
+### From Localized to Cluster Computing
 
-Conceptually, the rationale for moving from localized to distributed computing is pretty simple: 
+Conceptually, the rationale for moving from localized to cluster computing is pretty simple: 
 
-- Single computers (or *machines* going forward) have limited amounts of memory, computing power, and storage. So if you want to process an amount of data that is greater than your memory and storage capabilties, your machine will struggle (and likely fail)
-- So, instead of using a single computer, we can break the data into chunks and use multiple machines (or a *cluster* of machines) to divide the up work on those data chunks. We call the individual computers/machines in a cluster *nodes* 
-- Using the method above, we can harness the combined memory, computing, and storage of all the machines in the cluster, and we *distribute* the work across these machines. This allows us to handle significantly larger data sizes and perform very complex tasks on this data.
+- Single computers (or *machines* going forward) have limited amounts of memory, computing power, and storage. So if you want to process an amount of data that is significantly greater than your memory and storage capabilties, your machine will struggle (and likely fail)
+- Instead of using a single machine, we can utilize multiple machines (or a *cluster*) to read and divide our data load into chunks. Each machine then performs the necessary operations on those chunks, and returns the results to us, through a cluster gateway (also referred to as the *Master Node* - more on this later)
+- Using the method above, we can harness the combined memory, computing, and storage of all the machines in the cluster (we'll call the individual machines in a cluster *nodes* going forward). 
+- In addition, we're also *distributing* the computing work on this data across the cluster's nodes. This allows us to handle significantly larger data sizes and perform very complex tasks (that would otherwise crash a local machine).
 <br>
 
-### Key Terms
-- <Strong>Machine</Strong>: Another term for a computer or computing hardware (I will use them synonomously throughout)
-- <Strong>Cluster</Strong>: Group of machines
-- <Strong>Node</Strong>: An individual machine in a cluster
-- <Strong>Master Node</Strong>: An node (or application deployed on a node) that's responsible for managing the distributed process
-- <Strong>Worker Node</Strong>: Receives process instructions from the master and carries out those instructions by performing tasks and on the dataset
-- <Strong>Resource Manager</Strong>: Works with the Master Node ensure that there are enough available worker nodes to execute the distributed process
-
-### Conceptual Steps
-For any distributed computing process, the steps to execute that process across are generally as follows:
-
-1. We start with a set of data and some tasks we want completed, using that data. We compile those tasks into instructions (an *application*) and send the application to the Master node.
-2. The Master works with a Resource Manager to secure the appropriate number of Worker nodes, to ensure the application can be run
-3. The Master application reads and optimizes the instructions within the application, and sends these instructions to each Worker
-4. Each Worker then reads a chunk of the data, (per instructions from the Master) and executes the tasks according to the instructions sent to it
-5. Workers then report progress back to the Master, and the final result is presented to us through the Master node
+![localvsdistr](../graphics/Introduction/localvdistr.png)
 
 
-This has several key advantages:
+On top of the additional computing power and memory, this also has several other key advantages:
 
-- The amount of total available memory, storage, and compute across a cluster is significantly higher than a single machine
-- Distributed computing processes <strong>scale</strong> much more easily. That is, if you need more memory or computing power, you can  add more machines to your cluster. This is opposed to a single machine (which is what would be used for traditional DS tools), where you would need to add RAM to the device or upgrade the processor
-- Many distributed processes implement parallelism, in which certain tasks are completed concurrently on different chunks of data. This speeds up data processing significantly, especially for memory-intensive tasks
+- Cluster computing <strong>scales</strong> much more easily. That is, if you need more memory or computing power, you can add more machines to your cluster. This is opposed to a single machine, where you would need to add RAM to the device or upgrade the processor
+- Many cluster processes implement parallelism, in which certain tasks are completed concurrently. This means that each node above can operate on its chunk of data independently of the other nodes, and then coalesce its results with the other nodes upon completion. This speeds up data processing significantly, especially for memory-intensive tasks
 
-However, with more machines also comes more processes to manage them, and thus more places for errors. Below, I've categorized the errors into "buckets"(but it's worth noting that there WAY more errors, than I have time or space to account for):
+<br>
+However, with more machines also comes more processes to manage them, and thus more places for errors. Below, I've categorized the errors into "buckets" (but it's worth noting that there are WAY more errors, than I have time or space to account for):
+<br>
+<br>
 
-- Network/Communication Errors
-- Executor Node Errors
-- Master Node Errors
+<strong>Network/Communication Errors</strong>: In which the nodes in your cluster lose communication with each other, with the data source, or with the master node (and therefore you)
+![commserror](../graphics/Introduction/comms_error.png)
 
-### Additional Notes
-*Earlier I mentioned that a lot of DS post-grad programs (General Assembly, Metis, Udacity, etc.) don't cover these topics extensively. That's not to say that these aren't fantastic programs. I personally graduated from the General Assembly Immersive Data Science program in 2017 and Udacity Data Engineering Nanodegree Program in 2020, and can vouch for the quality of their curriculums and material. There just simply aren't enough hours to cover everything 
+<br>
+
+<strong>Node Errors</strong>: Individual nodes can fail for a variety of reasons, but if enough nodes go down, your remaining cluster may not have the memory or compute necessary to complete the tasks at hand
+![commserror](../graphics/Introduction/node_fail.png)
+
+<br>
+
+<strong>Master and Driver Node Errors</strong>: Though we haven't touched on the Master and Driver nodes (part of the next article will be dedicated solely to them), there are crucial for securing and coordinating work among the cluster nodes. These nodes can also fail, which means the cluster will not be able to coordinate work or report progress back to us. This makes master and driver node failures the most detrimental to any cluster computing job
+![commserror](../graphics/Introduction/master_node_fail.png)
+
+<br>
+As we continue to work through code examples in the proceeding articles, we will encounter, explain, and address errors that fall into each of these categories (we'll attach formal names to these errors later, as well). The important takeaway here that working with a cluster of machines expands the potential areas for error *significantly,* so to be wary of that when troubleshooting your Spark programs going forward
+
+<br>
+<br>
+
+## Moving Forward into Apache Spark, EMR, and YARN
+With this framework in mind, we can now move into the realm of practicality. In the next article, we will break down the key players of a Spark cluster, and their roles in facilitating a Spark job.

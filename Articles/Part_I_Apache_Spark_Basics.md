@@ -7,6 +7,12 @@ Apache Spark is widely regarded as the most popular open-source distributed comp
 Before we get into the knitty-gritty details of how Spark works, we should first establish some basic terms:
 
 ### Distributed Computing Terms
+### Key Terms
+- <Strong>Machine</Strong>: Another term for a computer or computing hardware (I will use them synonomously throughout)
+- <Strong>Cluster</Strong>: Group of machines
+- <Strong>Node</Strong>: An individual machine in a cluster
+- <Strong>Master Node</Strong>: An node (or application deployed on a node) that's responsible for managing the distributed process
+- <Strong>Worker Node</Strong>: Receives process instructions from the master and carries out those instructions by performing tasks and on the dataset
 - <strong>Resource Manager</strong>: An application that resides on a node with the authority to allocate 
 - <strong>Node Manager</strong>: An application on a node that communicates with the resource manager
 - <strong>Application Master</strong>: A master
