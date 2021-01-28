@@ -2,10 +2,10 @@
 
  In one of my first full-time roles as a data scientist, I was tasked with deploying and managing several Apache Spark pipelines that ingested, transformed, and cleaned terabytes of data for an enterprise analytics platform. 
  
- At the time, I had previously worked on a several academic projects using Spark, mainly through Databricks and AWS EMR. But, going into this project, my primary experience was working with the usual data science python libraries (Jupyter notebook, pandas, scikit, numpy, sci-py, Keras,Kaggle Notebooks, and JuptyerHub). As such, I was making the jump to cluster tools in a professional setting, for first time.
+ At the time, I had previously worked on a several academic projects using Spark, mainly through Databricks and AWS EMR. But, going into this project, my primary experience was working with the usual data science python libraries (Jupyter notebook, pandas, scikit, numpy, sci-py, Keras,Kaggle Notebooks, and JuptyerHub). 
 <br>
 <br>
-On my third day of the job, I reviewed the specifications for my new project, and I thought to myself: "....this should be an easy transition, right?"
+After reviewing the specifications for my new project, I pulled up the Spark 3.0.0 documentation and thought to myself: "....this should be an easy transition, right?"
 <br>
 <br>
 
@@ -13,23 +13,17 @@ On my third day of the job, I reviewed the specifications for my new project, an
 <br>
 <br>
 
-At the surface level, there are a lot of similarites between Spark and the traditional DS tools that made the transition seem *somewhat* easy: 
-- Pandas and Spark dataframes both provide intuitive, tabular representation for datasets (I happen to think that filtering and deduplications are actually *more* intuitive in Spark than Pandas, but more on that later)
-- Both have one-line implementations for reading popular data formats (csv, parquet, json, txt)
-- Both have similar UDF for implementations columnar transformations
-- Scikit-learn and Spark MLlib are fairly similar in conceptual implementation (import-instantiate-fit-test-assess-repeat), though the code implementation differs slightly
+Although there are a lot of similarities between the two, transitioning from Pandas/Python DS to Spark is more than just moving from Python to Scala, or moving from one coding framework to another. Rather, it's a transition from *localized* computing to *cluster* computing. This requires a shift in approach when it comes to developing and maintaining scalable, efficient jobs. 
 
-However, a few more steps into the world of Spark revealed that there are <strong>many</strong> more considerations when implementing scalable, efficient Spark jobs. This was because I wasn't just changing from Python to Scala, or one coding framework to another, but because I was jumping from localized computing to the world of *cluster computing*.
-
- As such, although I had plenty of experience with DS tools and methods, I discovered a significant knowlege gap in areas of commoditiy hardware, memory management, and networks, that kept me from fully realizing Spark's potential.
-<br>
 <br>
 
  ![ohno](../graphics/Introduction/ohno.png)
 
  <br>
 
-In the following articles, I'll be addressing many of these knowledge gaps, covering key concepts and practical examples that will help any data scientist make the transition from the more traditional, localized data science tools to a cluster computing framework in Apache Spark.
+In my personal experience, I've discovered that there were several key technical considerations that allowed me to fully make this transition and realize Spark's potential. In the following articles, I'll be addressing many of these considerations, and we will cover concepts and practical examples that will help any data scientist make the transition from localized data science tools to cluster computing with Apache Spark.
+
+
 
 Topics covered will include:
 
