@@ -1,8 +1,6 @@
 # A (Somewhat More) Practical Guide to Apache Spark - Part 1: Conceptual Introduction to Cluster Computing 
 
- In one of my first full-time roles as a data scientist, I was tasked with deploying and managing several Apache Spark pipelines that ingested, transformed, and cleaned terabytes of data for an enterprise analytics platform. 
- 
- At the time, I had previously worked on a several academic projects using Spark, mainly through Databricks and AWS EMR. But, going into this project, my primary experience was working with the usual data science python libraries (Jupyter notebook, pandas, scikit, numpy, sci-py, Keras,Kaggle Notebooks, and JuptyerHub). 
+ In one of my first full-time roles as a data scientist, I was tasked with deploying and managing several Apache Spark pipelines that ingested, transformed, and cleaned terabytes of data for an enterprise analytics platform. At the time, I had previously worked on several academic projects using Spark, mainly through Databricks and AWS EMR. However, going into this project, my primary experience was working with the usual data science python libraries (Jupyter notebook, pandas, scikit, numpy, sci-py, Keras, Kaggle Notebooks, JuptyerHub, etc.). As such, this was my first professional endeavor managing an Apache Spark program of this size. 
 <br>
 <br>
 After reviewing the specifications for my new project, I pulled up the Spark 3.0.0 documentation and thought to myself: "....this should be an easy transition, right?"
@@ -13,17 +11,9 @@ After reviewing the specifications for my new project, I pulled up the Spark 3.0
 <br>
 <br>
 
-Although there are a lot of similarities between the two, transitioning from Pandas/Python DS to Spark is more than just moving from Python to Scala, or moving from one coding framework to another. Rather, it's a transition from *localized* computing to *cluster* computing. This requires a shift in approach when it comes to developing and maintaining scalable, efficient jobs. 
+Although there are a lot of similarities between the two, transitioning from Pandas/Python DS to Spark is more than just moving from Python to Scala, or moving from one coding framework to another. Rather, it's a transition from *localized* computing to *cluster* computing. This requires a shift in approach when it comes to development, as well as an understanding of several key technical concepts, that are not generally covered in traditional pre- or post-grad data science programs.
 
-<br>
-
- ![ohno](../graphics/Introduction/ohno.png)
-
- <br>
-
-In my personal experience, I've discovered that there were several key technical considerations that allowed me to fully make this transition and realize Spark's potential. In the following articles, I'll be addressing many of these considerations, and we will cover concepts and practical examples that will help any data scientist make the transition from localized data science tools to cluster computing with Apache Spark.
-
-
+In the following articles, I'll be addressing these topics, and we will cover concepts and practical examples that will help any data scientist make the transition from localized data science tools to cluster computing with Apache Spark.
 
 Topics covered will include:
 
@@ -37,6 +27,11 @@ Topics covered will include:
 - Anything else I can think of that may be useful
 
 <br>
+
+ ![ohno](../graphics/Introduction/ohno.png)
+
+ <br>
+
 
 ## A Conceptual Introduction to Cluster Computing
 
@@ -52,7 +47,7 @@ Conceptually, the rationale for moving from localized to cluster computing is pr
 
 - Single computers (or *machines* going forward) have limited amounts of memory, computing power, and storage. So if you want to process an amount of data that is significantly greater than your memory and storage capabilties, your machine will struggle (and likely fail)
 - Instead of using a single machine, we can utilize multiple machines (or a *cluster*) to read and divide our data load into chunks. Each machine then performs the necessary operations on those chunks, and returns the results to us, through a cluster gateway (also referred to as the *Master Node* - more on this later)
-- Using the method above, we can harness the combined memory, computing, and storage of all the machines in the cluster (we'll call the individual machines in a cluster *nodes* going forward). 
+- Using the method above, we can harness the combined memory, computing, and storage of all the machines in the cluster. We'll call these individual machines in a cluster *nodes* going forward. 
 - In addition, we're also *distributing* the computing work on this data across the cluster's nodes. This allows us to handle significantly larger data sizes and perform very complex tasks (that would otherwise crash a local machine).
 <br>
 
@@ -74,7 +69,7 @@ However, with more machines also comes more processes to manage them, and thus m
 
 <br>
 
-<strong>Node Errors</strong>: Individual nodes can fail for a variety of reasons, but if enough nodes go down, your remaining cluster may not have the memory or compute necessary to complete the tasks at hand
+<strong>Node Errors</strong>: Occur on individual machines, which cause them to fail. Individual nodes can fail for a variety of reasons, but if enough nodes go down, your remaining cluster may not have the memory or compute necessary to complete the tasks at hand
 ![commserror](../graphics/Introduction/node_fail.png)
 
 <br>
