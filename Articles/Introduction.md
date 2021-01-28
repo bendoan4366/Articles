@@ -3,7 +3,7 @@
  In one of my first full-time roles as a data scientist, I was tasked with deploying and managing several Apache Spark pipelines that ingested, transformed, and cleaned terabytes of data for an enterprise analytics platform. At the time, I had previously worked on several academic projects using Spark, mainly through Databricks and AWS EMR, but my primary experience was working with the usual data science python libraries (Jupyter notebook, pandas, scikit, numpy, sci-py, Keras, Kaggle Notebooks, JuptyerHub, etc.). As such, this was my first professional endeavor managing an Apache Spark program of this size. 
 <br>
 <br>
-After reviewing the specifications for my new project, I pulled up the Spark 3.0.0 documentation and thought to myself: "....this should be an easy transition, right?"
+Upon receiving the specifications for my new task, I pulled up the Spark 3.0.0 documentation and thought to myself: "....this should be an easy transition, right?"
 <br>
 <br>
 
