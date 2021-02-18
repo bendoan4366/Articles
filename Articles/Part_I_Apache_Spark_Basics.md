@@ -1,6 +1,23 @@
-## Apache Spark: Concepts and Basics
+# Apache Spark and YARN: Concepts and Basics
 
-Apache Spark is widely regarded as the most popular open-source distributed computing tools, and provides powerful APIs that combine the distributed computing framework with familiar data structures, such as dataframes.
+In the [previous article](link_to_Part_I_article), we briefly discussed the differences between distributed data science and localized data science, to establish a framework to help understand Apache Spark.
+
+Apache Spark is widely regarded as the most popular open-source distributed data science tool, and provides powerful APIs that combine the distributed computing framework with familiar data structures, such as dataframes. In this article, we will go over the basics of Spark internals, and how it works with a resource negotiator (YARN) to execute a basic Spark job.
+
+## Spark vs. YARN: Software Instructions vs. Resource/Hardware Management
+As mentioned in the [previously](link_to_Part_I_article), Spark is often run on a cluster of computers. This means that with each Spark job, a set of programs have to be executed across the cluster and to organize the cluster's nodes and distribute instructions (Spark program) to each node.
+
+<br>
+
+This is where YARN comes in.
+
+<br>
+
+## Spark and YARN (Yet Another Resource Negotiator)
+
+YARN (Yet Another Resource Negotiator) is a distributed  computing tool, developed by Apache, that is designed for cluster management, resource scheduling, and distributed job tracking. In other words, its main use is organize and arbitrate the node resources in a cluster whenever a distributed program is executed. 
+
+<br>
 
 ## Basic Terms
 
